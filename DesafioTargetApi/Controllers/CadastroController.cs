@@ -36,6 +36,19 @@ namespace DesafioTargetApi.Controllers
             _context.SaveChanges();
         }
 
+        [HttpDelete]
+        public void Excluir([FromBody] int id)
+        {
+            Cliente cliente = new Cliente();
+            List<Endereco> enderecos = new List<Endereco>();
+            cliente = _context.Clientes.SingleOrDefault(c => c.Id == id);
+            enderecos = _context.Enderecos.Where(e => e.Cliente == cliente).ToList();
+
+            _context.Enderecos.RemoveRange(enderecos);
+            _context.Clientes.Remove(cliente);
+            _context.SaveChanges();
+        }
+
         [HttpGet("{id}")]
         public Cliente Consultar(long id)
         {
@@ -43,9 +56,9 @@ namespace DesafioTargetApi.Controllers
         }
 
         [HttpGet()]
-        public async Task<ActionResult<List<Cliente>>> Todos()
+        public List<Cliente> Todos()
         {
-            return await _context.Clientes.Include(e => e.Enderecos).ToListAsync();
+            return _context.Clientes.Include(e => e.Enderecos).ToList();
         }
     }
 }

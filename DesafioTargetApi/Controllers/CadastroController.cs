@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using DesafioTargetApi.Model;
-using Microsoft.AspNetCore.Http;
+using DesafioTargetApi.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace DesafioTargetApi.Controllers
 {
@@ -15,50 +9,59 @@ namespace DesafioTargetApi.Controllers
     [ApiController]
     public class CadastroController : ControllerBase
     {
-        private DesafioTargetContext _context;
+        private readonly ICadastroRepository _cadastroRepository;
 
-        public CadastroController(DesafioTargetContext context)
+        public CadastroController(ICadastroRepository cadastroRepository)
         {
-            _context = context;
+            _cadastroRepository = cadastroRepository;
         }
 
+        //POST - Cadastro
+        //Salva cadastro do cliente
         [HttpPost]
-        public void Inserir([FromBody] Cliente cliente)
+        public void Save([FromBody] Cliente cliente)
         {
-            _context.Clientes.Add(cliente);
-            _context.SaveChanges();
+            _cadastroRepository.SaveCliente(cliente);
         }
 
+        //PUT - Cadastro
+        //Atualiza cadastro do cliente
         [HttpPut]
-        public void Atualizar([FromBody] Cliente cliente)
+        public void Update([FromBody] Cliente cliente)
         {
-            _context.Clientes.Update(cliente);
-            _context.SaveChanges();
+            _cadastroRepository.UpdateCliente(cliente);
         }
 
+        //DELETE - Cadastro
+        //Deleta cadastro do cliente
         [HttpDelete]
-        public void Excluir([FromBody] int id)
+        public void Delete([FromBody] int id)
         {
-            Cliente cliente = new Cliente();
-            List<Endereco> enderecos = new List<Endereco>();
-            cliente = _context.Clientes.SingleOrDefault(c => c.Id == id);
-            enderecos = _context.Enderecos.Where(e => e.Cliente == cliente).ToList();
-
-            _context.Enderecos.RemoveRange(enderecos);
-            _context.Clientes.Remove(cliente);
-            _context.SaveChanges();
+            _cadastroRepository.DeleteCliente(id);
         }
 
+        //DELETE - Cadastro/id 
+        //Remove endereço do cliente
+        [HttpDelete("{id}")]
+        public void DeleteEndereco([FromBody] int id)
+        {
+            _cadastroRepository.DeleteEndereco(id);
+        }
+
+        //GET - Cadastro/id
+        //Consulta detalhes do cliente
         [HttpGet("{id}")]
-        public Cliente Consultar(long id)
+        public Cliente GetOne(int id)
         {
-            return _context.Clientes.Include(e => e.Enderecos).SingleOrDefault(c => c.Id == id);
+            return _cadastroRepository.GetCliente(id);
         }
 
-        [HttpGet()]
-        public List<Cliente> Todos()
+        //GET - Cadastro
+        //Obtém lista de todos os clientes
+        [HttpGet]
+        public List<Cliente> GetAll()
         {
-            return _context.Clientes.Include(e => e.Enderecos).ToList();
+            return _cadastroRepository.GetClientes();
         }
     }
 }

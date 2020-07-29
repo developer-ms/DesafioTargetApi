@@ -34,18 +34,18 @@ namespace DesafioTargetApi.Controllers
 
         //DELETE - Cadastro
         //Deleta cadastro do cliente
-        [HttpDelete]
-        public void Delete([FromBody] int id)
+        [HttpDelete("{id}")]
+        public void Delete(int id)
         {
             _cadastroRepository.DeleteCliente(id);
         }
 
         //DELETE - Cadastro/id 
         //Remove endereço do cliente
-        [HttpDelete("{id}")]
-        public void DeleteEndereco([FromBody] int id)
+        [HttpDelete("{idCliente}/{idEndereco}")]
+        public void DeleteEndereco(int idEndereco)
         {
-            _cadastroRepository.DeleteEndereco(id);
+            _cadastroRepository.DeleteEndereco(idEndereco);
         }
 
         //GET - Cadastro/id
